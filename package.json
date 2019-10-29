@@ -1,0 +1,33 @@
+{
+  "name": "teamwork-api",
+  "version": "1.0.0",
+  "description": "DevCTrainingWithAndela Capstone Project (Api Endpoints)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wincodes/teamwork-api.git"
+  },
+  "keywords": [
+    "Teamwork-Api",
+    "Andela",
+    "DevC",
+    "Facebook"
+  ],
+  "author": "wincodes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wincodes/teamwork-api/issues"
+  },
+  "homepage": "https://github.com/wincodes/teamwork-api#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  }
+}
