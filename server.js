@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 const port = process.env.PORT || 7000;
 
 app.get('/api/v1', (req, res) => {
-  res.json('Hello World')
+	res.json('Hello World');
 });
 
 //start the server
