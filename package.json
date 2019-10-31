@@ -5,13 +5,16 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "server": "nodemon server.js --exec \"npm run lint\"",
+    "server": "nodemon server.js",
     "lint": "./node_modules/.bin/eslint . --ext .js --fix"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.js": ["./node_modules/.bin/eslint —-fix", "git add"]
   },
   "repository": {
     "type": "git",
@@ -31,11 +34,13 @@
   "homepage": "https://github.com/wincodes/teamwork-api#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "pg": "^7.12.1"
   },
   "devDependencies": {
     "eslint": "^6.6.0",
     "husky": "^3.0.9",
+    "lint-staged": "^9.4.2",
     "nodemon": "^1.19.4"
   }
 }
