@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.com/wincodes/teamwork-api.svg?branch=develop)](https://travis-ci.com/wincodes/teamwork-api)
+[![Coverage Status](https://coveralls.io/repos/github/wincodes/teamwork-api/badge.svg?branch=develop)](https://coveralls.io/github/wincodes/teamwork-api?branch=develop)
+
 # teamwork-api
 DevCTrainingWithAndela Capstone project (Api Endpoints)
 
