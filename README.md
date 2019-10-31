@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/wincodes/teamwork-api.svg?branch=develop)](https://travis-ci.com/wincodes/teamwork-api)
 # teamwork-api
 DevCTrainingWithAndela Capstone project (Api Endpoints)
 
