@@ -19,7 +19,7 @@ pool.query('SELECT NOW()')
 pool.end();
 
 //setup the port
-const port = process.env.NODE_ENV === 'dev' ? process.env.PORT : process.env.TEST_PORT;
+const port = process.env.NODE_ENV === 'test' ?  process.env.TEST_PORT : process.env.PORT;
 
 app.get('/api/v1', (req, res) => {
 	res.json('Hello World');
