@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const pgConfig = require('./pgconfig');
@@ -12,18 +13,13 @@ app.use(bodyParser.json());
 
 //test connection to postgres database
 const pool = new Pool(pgConfig);
-pool.query('SELECT NOW()', (err, res) => {
-	if(res){
-		console.log('postgres connected');
-	}
-	if(err){
-		console.log(err);
-	}
-	pool.end();
-});
+pool.query('SELECT NOW()')
+	.then(res => console.log(res.rows))
+	.catch(e => console.log(e));
+pool.end();
 
 //setup the port
-const port = process.env.PORT || 7000;
+const port = process.env.NODE_ENV === 'test' ?  process.env.TEST_PORT : process.env.PORT;
 
 app.get('/api/v1', (req, res) => {
 	res.json('Hello World');
@@ -31,3 +27,6 @@ app.get('/api/v1', (req, res) => {
 
 //start the server
 app.listen(port, () => console.log(`server started at Port ${port}`));
+
+//exports the app for testing
+module.exports = app;
