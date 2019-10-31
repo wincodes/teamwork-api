@@ -17,7 +17,7 @@ pool.query('SELECT NOW()', (err, res) => {
 		console.log('postgres connected');
 	}
 	if(err){
-		throw(err);
+		console.log(err);
 	}
 	pool.end();
 });
