@@ -10,5 +10,11 @@ $ cd teamwork-api
 # install dependencies
 $ npm install
 
+# configure env
+$ copy cotents of .env.example to a new .env file and set database and test connections
+
 # start the development server
 $ npm run server
+
+# run tests
+$ npm run test
