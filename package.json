@@ -8,7 +8,7 @@
     "server": "nodemon server.js",
     "lint": "./node_modules/.bin/eslint . --ext .js --fix",
     "test": "mocha --exit",
-    "coverage": "mocha report --reporter=mocha-lcov-reporter | coveralls"
+    "coverage": "nyc report --reporter=mocha-lcov-reporter | coveralls"
   },
   "husky": {
     "hooks": {
