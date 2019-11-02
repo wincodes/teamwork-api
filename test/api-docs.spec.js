@@ -8,23 +8,17 @@ const server = require('../server');
 
 chai.use(chaiHttp);
 
-describe('Test Api response', () => {
+describe('Api documentation route', () => {
 	/*
-	 * A basic test to test the api default response
+	 * Ensure Api documentation route works
 	 */
-	describe('/GET /api/v1/', () => {
-		it('it should return stautus 200 and body hello world', done => {
+	describe('/GET /api/v1/api-docs', () => {
+		it('it should return stautus 200', done => {
 			chai
 				.request(server)
-				.get('/api/v1')
+				.get('/api/v1/api-docs')
 				.end((err, res) => {
 					assert.equal(res.status, 200);
-					assert.deepInclude(res.body, {
-						status: 'success',
-						data: {
-							message: 'hello world'
-						}
-					});
 					done();
 				});
 		});
