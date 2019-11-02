@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const pgConfig = require('./pgconfig');
+const dbConfig = require('./config/database');
 const { Pool } = require('pg');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //test connection to postgres database
-const pool = new Pool(pgConfig);
+const pool = new Pool(dbConfig);
 pool
 	.query('SELECT NOW()')
 	.then(res => console.log(res.rows))
