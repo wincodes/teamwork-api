@@ -22,3 +22,6 @@ $ npm run server
 
 # run tests
 $ npm run test
+
+# api documentation
+visit `/api/v1/api-docs` for the api documentation
