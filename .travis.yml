@@ -15,5 +15,8 @@ env:
 services:
   - postgresql
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres    
+  - psql -c 'create database travis_ci_test;' -U postgres
+  - npm run migrate   
 after_success: npm run coverage
+after_script:
+  - npm run migrate down

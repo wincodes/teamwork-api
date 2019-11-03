@@ -14,8 +14,9 @@ $ cd teamwork-api
 # install dependencies
 $ npm install
 
-# configure env
-$ copy cotents of .env.example to a new .env file and set database and test connections
+# set up
+- copy cotents of .env.example to a new .env file and set all your env  variables
+- after setting your database variables, run $ `npm run migrate` to run database migrations
 
 # start the development server
 $ npm run server

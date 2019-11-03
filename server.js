@@ -1,10 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const dbConfig = require('./config/database');
-const { Pool } = require('pg');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const AuthRoutes = require('./routes/auth');
 
 //initialize express
 const app = express();
@@ -12,14 +11,6 @@ const app = express();
 //body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-//test connection to postgres database
-const pool = new Pool(dbConfig);
-pool
-	.query('SELECT NOW()')
-	.then(res => console.log(res.rows))
-	.catch(e => console.log(e));
-pool.end();
 
 //setup the port
 const port =
@@ -38,7 +29,7 @@ const swaggerOptions = {
 		servers: ['http://localhost:7000']
 	},
 
-	apis: ['server.js', '.routes/*.js']
+	apis: ['./routes/*.js', 'server.js']
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -66,6 +57,9 @@ app.get('/api/v1', (req, res) => {
 		}
 	});
 });
+
+//routes
+app.use('/api/v1/auth', AuthRoutes);
 
 //start the server
 app.listen(port, () => console.log(`server started at Port ${port}`));
