@@ -31,7 +31,7 @@ const auth = (req, res, next) => {
 						req.user = user;
 						next();
 					} else {
-						return res.status(401).json({
+						return res.status(403).json({
 							status: 'error',
 							error: 'Only an Admin is Allowed'
 						});
