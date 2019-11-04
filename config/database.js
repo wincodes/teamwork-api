@@ -15,6 +15,8 @@ const testDbConn ={
 	database: process.env.TEST_DB_DATABASE,
 	password: process.env.TEST_DB_PASSWORD,
 	port: process.env.TEST_DB_PORT,
+	idleTimeoutMillis: 30000,
+	connectionTimeoutMillis: 20000
 };
 
 const pgConfig = process.env.NODE_ENV === 'test' ? testDbConn : defaultDbConn;

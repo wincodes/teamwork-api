@@ -135,7 +135,7 @@ module.exports = {
                 '${firstName}', '${lastName}', '${hash}', '${email}', '${gender}', '${jobRole}',
                 '${department}', '${address}', NOW()
               )
-              RETURNING id, firstName, lastname, email
+              RETURNING id, firstName, lastname, email, usertype
             `;
 
 						const pool2 = new Pool(dbConfig);
@@ -247,11 +247,12 @@ module.exports = {
 							id: user.id,
 							firstName: user.firstName,
 							lastName: user.lastName,
-							email: user.email
+							email: user.email,
+							usertype: user.usertype
 						};
 						jwt.sign(userData, process.env.APP_SECRET, { expiresIn: '5h' }, (err, token) => {
 
-							return res.status(201).json({
+							return res.status(200).json({
 								status: 'success',
 								data: {
 									token,
