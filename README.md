@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/wincodes/teamwork-api.svg?branch=develop)](https://travis-ci.com/wincodes/teamwork-api)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e33652477994fd76a21a/maintainability)](https://codeclimate.com/github/wincodes/teamwork-api/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/wincodes/teamwork-api/badge.svg?branch=develop)](https://coveralls.io/github/wincodes/teamwork-api?branch=develop)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e33652477994fd76a21a/maintainability)](https://codeclimate.com/github/wincodes/teamwork-api/maintainability)
 
 # teamwork-api
 DevCTrainingWithAndela Capstone project (Api Endpoints)
