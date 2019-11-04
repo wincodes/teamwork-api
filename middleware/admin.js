@@ -1,5 +1,4 @@
-const { Pool } = require('pg');
-const database = require('../config/database');
+
 const jwt = require('jsonwebtoken');
 
 
@@ -22,29 +21,15 @@ const auth = (req, res, next) => {
 					error: 'Invalid or Expired Token'
 				});
 			}
-			const pool = new Pool(database);
-			pool
-				.query(`SELECT usertype FROM users WHERE id = ${user.id}`)
-				.then(data => {
-					const { rows } = data;
-					if (rows[0].usertype === 'admin') {
-						req.user = user;
-						next();
-					} else {
-						return res.status(403).json({
-							status: 'error',
-							error: 'Only an Admin is Allowed'
-						});
-					}
-				})
-				.catch(e => {
-					res.status(500).json({
-						status: 'error',
-						error: 'An error occurred please try again'
-					});
-					throw e;
+			if (user.usertype === 'admin') {
+				req.user = user;
+				next();
+			} else {
+				return res.status(403).json({
+					status: 'error',
+					error: 'Only an Admin is Allowed'
 				});
-			pool.end();
+			}
 		});
 	} else {
 		return res.status(401).json({

@@ -4,14 +4,6 @@ node_js:
 cache:
   directories:
     - "node_modules"
-env:
-  - DB=postgres
-  - TEST_DB_HOST=127.0.0.1
-  - TEST_DB_DATABASE=travis_ci_test
-  - TEST_DB_PORT=5432
-  - TEST_DB_PASSWORD=
-  - TEST_DB_USER=postgres
-  - APP_SECRET=secret
 services:
   - postgresql
 before_script:
