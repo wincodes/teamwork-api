@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/wincodes/teamwork-api.svg?branch=develop)](https://travis-ci.com/wincodes/teamwork-api)
-<a href='https://coveralls.io/github/wincodes/teamwork-api?branch=develop'><img src='https://coveralls.io/repos/github/wincodes/teamwork-api/badge.svg?branch=develop' alt='Coverage Status' /></a>
+<a href='https://coveralls.io/github/wincodes/teamwork-api?branch=develop'><img src='https://coveralls.io/repos/github/wincodes/teamwork-api/badge.svg?branch=develop&service=github' alt='Coverage Status' /></a>
 [![Maintainability](https://api.codeclimate.com/v1/badges/e33652477994fd76a21a/maintainability)](https://codeclimate.com/github/wincodes/teamwork-api/maintainability)
 
 # teamwork-api
