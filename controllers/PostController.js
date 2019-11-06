@@ -1,9 +1,9 @@
 const gifValidation = require('../validation/GifsValidation');
 const cloudinary = require('cloudinary').v2;
 const cloudinaryConfig = require('../config/cloudinary');
-const fs = require('fs');
 const dbConfig = require('../config/database');
 const { Pool } = require('pg');
+const Datauri = require('datauri');
 
 //configure clouduinary
 cloudinary.config(cloudinaryConfig);
@@ -58,72 +58,54 @@ class PostController {
 
 			//if validation failes send errors
 			if (!isValid) {
-				if (req.file) {
-					await fs.unlinkSync(req.file.path, (err) => {
-						if (err) throw err;
-						console.log('path/file.txt was deleted');
-					});
-				}
-
 				return res.status(400).json({
 					status: 'error',
 					error: errors
 				});
 			}
 
+			const datauri = new Datauri();
+
+			await datauri.format('.gif', req.file.buffer);
+
 			let uploadImage = '';
 
-			cloudinary.uploader.upload(req.file.path, (error, result) => {
+			await cloudinary.uploader.upload(datauri.content, (error, result) => {
 				if (error) {
-					console.log(error);
+					throw (error);
 				} else {
 					uploadImage = result.secure_url;
-
-					console.log(result);
 				}
 			});
 
-			if (uploadImage) {
-
-				await fs.unlinkSync(req.file.path, (err) => {
-					if (err) throw err;
-					console.log('path/file.txt was deleted');
-				});
-
-
-				const query = `
-          INSERT INTO posts(
-              user_id, title, image, post_type, created_on
-            )
-          VALUES
-          (
-            '${req.user.id}', '${req.body.title}', ${uploadImage}, 'gif', NOW()
+			const query = `
+        INSERT INTO posts(
+            user_id, title, image, post_type, created_on
           )
-          RETURNING id, title, image, created_on
-        `;
+        VALUES
+        (
+          '${req.user.id}', '${req.body.title}', '${uploadImage}', 'gif', NOW()
+        )
+        RETURNING id, title, image, created_on
+      `;
 
-				const pool = new Pool(dbConfig);
-				const resp = await pool.query(query);
-				await pool.end();
+			const pool = new Pool(dbConfig);
+			const resp = await pool.query(query);
+			await pool.end();
 
-				const { rows } = resp;
+			const { rows } = resp;
 
-				return res.status(201).json({
-					status: 'success',
-					data: {
-						message: 'GIF image successfully posted',
-						gifId: rows[0].id,
-						createdOn: rows[0].created_on,
-						title: rows[0].title,
-						imageUrl: rows[0].image
-					}
-				});
-			}else{
-				res.status(500).json({
-					status: 'error',
-					error: 'An error occurred on image upload please try again'
-				});
-			}
+			return res.status(201).json({
+				status: 'success',
+				data: {
+					message: 'GIF image successfully posted',
+					gifId: rows[0].id,
+					createdOn: rows[0].created_on,
+					title: rows[0].title,
+					imageUrl: rows[0].image
+				}
+			});
+
 		} catch (err) {
 			res.status(500).json({
 				status: 'error',
