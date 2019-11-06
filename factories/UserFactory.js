@@ -7,23 +7,18 @@ const dbConfig = require('../config/database');
 module.exports = {
 
 	async createUser(details, userType) {
-		return new Promise((resolve, reject) => {
-			bcrypt.genSalt(10, (err, salt) => {
-				if (err) {
-					throw err;
-				}
+		/** eslint-disable  no-useless-catch */
+		try {
+			const salt = await bcrypt.genSalt(10);
 
-				bcrypt.hash(details.password, salt, (err, hash) => {
-					if (err) {
-						reject(err);
-					}
+			const hash = await bcrypt.hash(details.password, salt);
 
-					//get all the user data from the request details
-					const {
-						firstName, lastName, email, gender, jobRole, department, address
-					} = details;
+			//get all the user data from the request details
+			const {
+				firstName, lastName, email, gender, jobRole, department, address
+			} = details;
 
-					const query = `
+			const query = `
           INSERT INTO users(
               firstName, lastName, password, email, gender, jobRole, department, address, usertype, created_on
             )
@@ -35,24 +30,17 @@ module.exports = {
           RETURNING id, firstName, lastname, email, usertype
         `;
 
-					const pool2 = new Pool(dbConfig);
-					pool2.query(query, (err, resp) => {
-						if (err) {
-							reject(err);
-						}
+			const pool2 = new Pool(dbConfig);
+			const resp = await pool2.query(query);
 
-						const { rows } = resp;
+			pool2.end();
 
-						//create the token and return the response
-						jwt.sign(rows[0], process.env.APP_SECRET, { expiresIn: '5h' }, (err, token) => {
-							if (err) reject(err);
-							resolve(token);
-						});
-					});
-					pool2.end();
-				});
-			});
-		});
+			const { rows } = resp;
 
+			//create the token and return the response
+			return jwt.sign(rows[0], process.env.APP_SECRET, { expiresIn: '5h' });
+		} catch (err) {
+			return err;
+		}
 	}
 };

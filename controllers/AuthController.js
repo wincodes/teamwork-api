@@ -85,7 +85,6 @@ class AuthController {
 				});
 			}
 
-
 			const pool = new Pool(dbConfig);
 
 			//check if user with the email exist first
@@ -93,79 +92,53 @@ class AuthController {
 
 			const { rows } = findUser;
 			if (rows.length > 0) {
+				await pool.end();
 				//the user already exist return error
 				return res.status(400).json({
 					status: 'error',
 					error: `User with email ${req.body.email} already exists`
 				});
 			} else {
-
 				//encrypt the password with bcryptjs
-				bcrypt.genSalt(10, (err, salt) => {
-					if (err) {
-						res.status(500).json({
-							status: 'error',
-							error: 'An error occurred please try again'
-						});
+				const salt = await bcrypt.genSalt(10);
 
-						throw err;
+				const hash = await bcrypt.hash(req.body.password, salt);
+
+				//get all the user data from the request body
+				const {
+					firstName, lastName, email, gender, jobRole, department, address
+				} = req.body;
+
+				const query = `
+					INSERT INTO users(
+							firstName, lastName, password, email, gender, jobRole, department, address, created_on
+						)
+					VALUES
+					(
+						'${firstName}', '${lastName}', '${hash}', '${email}', '${gender}', '${jobRole}',
+						'${department}', '${address}', NOW()
+					)
+					RETURNING id, firstName, lastname, email, usertype
+				`;
+
+				// const pool2 = new Pool(dbConfig);
+				const resp = await pool.query(query);
+				await pool.end();
+
+				const { rows } = resp;
+
+				//create the token and return the response
+				const token = await jwt.sign(rows[0], process.env.APP_SECRET, { expiresIn: '5h' });
+
+				return res.status(201).json({
+					status: 'success',
+					data: {
+						message: 'User account successfully created',
+						token,
+						userId: rows[0].id,
 					}
-
-					bcrypt.hash(req.body.password, salt, (err, hash) => {
-						if (err) {
-							res.status(500).json({
-								status: 'error',
-								error: 'An error occurred please try again'
-							});
-
-							throw err;
-						}
-
-						//get all the user data from the request body
-						const {
-							firstName, lastName, email, gender, jobRole, department, address
-						} = req.body;
-
-						const query = `
-              INSERT INTO users(
-                  firstName, lastName, password, email, gender, jobRole, department, address, created_on
-                )
-              VALUES
-              (
-                '${firstName}', '${lastName}', '${hash}', '${email}', '${gender}', '${jobRole}',
-                '${department}', '${address}', NOW()
-              )
-              RETURNING id, firstName, lastname, email, usertype
-            `;
-
-						const pool2 = new Pool(dbConfig);
-						pool2.query(query, (err, resp) => {
-							if (err) {
-								throw err;
-							}
-
-							const { rows } = resp;
-
-							//create the token and return the response
-							jwt.sign(rows[0], process.env.APP_SECRET, { expiresIn: '5h' }, (err, token) => {
-
-								res.status(201).json({
-									status: 'success',
-									data: {
-										message: 'User account successfully created',
-										token,
-										userId: rows[0].id,
-									}
-								});
-
-							});
-						});
-						pool2.end();
-					});
 				});
 			}
-			pool.end();
-			return;
 		} catch (err) {
 			res.status(500).json({
 				status: 'error',
@@ -175,7 +148,7 @@ class AuthController {
 		}
 	}
 
-	
+
 	/**
  * @swagger
  * paths:
@@ -243,33 +216,32 @@ class AuthController {
 				const user = rows[0];
 
 				//match the password
-				bcrypt.compare(req.body.password, user.password).then(isMatch => {
-					if (isMatch) {
-						const userData = {
-							id: user.id,
-							firstName: user.firstName,
-							lastName: user.lastName,
-							email: user.email,
-							usertype: user.usertype
-						};
-						jwt.sign(userData, process.env.APP_SECRET, { expiresIn: '5h' }, (err, token) => {
+				const isMatch = await bcrypt.compare(req.body.password, user.password);
+				if (isMatch) {
+					const userData = {
+						id: user.id,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						email: user.email,
+						usertype: user.usertype
+					};
 
-							return res.status(200).json({
-								status: 'success',
-								data: {
-									token,
-									userId: userData.id,
-								}
-							});
+					const token = await jwt.sign(userData, process.env.APP_SECRET, { expiresIn: '5h' });
 
-						});
-					} else {
-						return res.status(400).json({
-							status: 'error',
-							error: 'Password does not match'
-						});
-					}
-				});
+					return res.status(200).json({
+						status: 'success',
+						data: {
+							token,
+							userId: userData.id,
+						}
+					});
+
+				} else {
+					return res.status(400).json({
+						status: 'error',
+						error: 'Password does not match'
+					});
+				}
 			}
 
 		} catch (err) {
