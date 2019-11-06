@@ -4,6 +4,7 @@ const cloudinaryConfig = require('../config/cloudinary');
 const dbConfig = require('../config/database');
 const { Pool } = require('pg');
 const Datauri = require('datauri');
+const ArticleValidation = require('../validation/ArticleValidation');
 
 //configure clouduinary
 cloudinary.config(cloudinaryConfig);
@@ -103,6 +104,98 @@ class PostController {
 					createdOn: rows[0].created_on,
 					title: rows[0].title,
 					imageUrl: rows[0].image
+				}
+			});
+
+		} catch (err) {
+			res.status(500).json({
+				status: 'error',
+				error: 'An error occurred please try again'
+			});
+			throw err;
+		}
+	}
+    
+	/**
+ * @swagger
+ * paths:
+ *  /api/v1/article:
+ *    post:
+ *      description: create a gif post
+ *      parameters:
+ *        - in: query
+ *          name: title
+ *          required: true
+ *          schema:
+ *            type: string
+ *        - in: query
+ *          name: article
+ *          required: true
+ *          schema:
+ *            type: String 
+ *      responses:
+ *        '201':
+ *          description: OK, Post created successfully
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: "success" 
+ *                  data:
+ *                    type: object
+ *                    example:
+ *                      articleId: Integer
+ *                      message: Article successfully posted,
+ *                      createdOn : DateTime,
+ *                      title : String
+ *        '400':
+ *          description: Bad request. Missing parameters.
+ *        '500':
+ *          description: Server error.
+ *              
+ */
+	async createArticle(req, res) {
+		try {
+			// // validate the data sent
+			const { errors, isValid } = ArticleValidation(req.body);
+
+			//if validation failes send errors
+			if (!isValid) {
+				return res.status(400).json({
+					status: 'error',
+					error: errors
+				});
+			}
+
+			const { title, article } = req.body;
+
+			const query = `
+        INSERT INTO posts(
+            user_id, title, image, post_type, created_on
+          )
+        VALUES
+        (
+          '${req.user.id}', '${title}', '${article}', 'gif', NOW()
+        )
+        RETURNING id, title, article, created_on
+      `;
+
+			const pool = new Pool(dbConfig);
+			const resp = await pool.query(query);
+			await pool.end();
+
+			const { rows } = resp;
+
+			return res.status(201).json({
+				status: 'success',
+				data: {
+					message: 'Article successfully posted',
+					articleId: rows[0].id,
+					createdOn: rows[0].created_on,
+					title: rows[0].title
 				}
 			});
 

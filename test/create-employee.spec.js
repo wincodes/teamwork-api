@@ -23,90 +23,85 @@ const userDetails = {
 };
 
 describe('Test to create an employee', () => {
-	/*
-	 * Test employee creation
-	 */
-	describe('/POST /api/v1/auth/create-user', () => {
 
-		it('it should return 401 and unauthiorized for users not logged in', async () => {
-			const res = await chai.request(server)
-				.post('/api/v1/auth/create-user');
+	it('it should return 401 and unauthiorized for users not logged in', async () => {
+		const res = await chai.request(server)
+			.post('/api/v1/auth/create-user');
 
-			assert.equal(res.status, 401);
-			assert.deepInclude(res.body, {
-				status: 'error',
-				error: 'unauthenticated'
-			});
+		assert.equal(res.status, 401);
+		assert.deepInclude(res.body, {
+			status: 'error',
+			error: 'unauthenticated'
 		});
+	});
 
-		it('it should return 403 and error for employees and other users not admin', async () => {
-			const token = TokenFactory('employee');
+	it('it should return 403 and error for employees and other users not admin', async () => {
+		const token = TokenFactory('employee');
 
-			const res = await chai.request(server)
-				.post('/api/v1/auth/create-user')
-				.set('Authorization', `Bearer ${token}`);
-			assert.equal(res.status, 403);
-			assert.deepInclude(res.body, {
-				status: 'error',
-				error: 'Only an Admin is Allowed'
-			});
+		const res = await chai.request(server)
+			.post('/api/v1/auth/create-user')
+			.set('Authorization', `Bearer ${token}`);
+		assert.equal(res.status, 403);
+		assert.deepInclude(res.body, {
+			status: 'error',
+			error: 'Only an Admin is Allowed'
 		});
+	});
 
-		it('it should return validate input and return errors and a 400 status', async () => {
-			const token = TokenFactory('admin');
+	it('it should return validate input and return errors and a 400 status', async () => {
+		const token = TokenFactory('admin');
 
-			const res = await chai.request(server)
-				.post('/api/v1/auth/create-user')
-				.set('Authorization', `Bearer ${token}`);
+		const res = await chai.request(server)
+			.post('/api/v1/auth/create-user')
+			.set('Authorization', `Bearer ${token}`);
 
-			assert.equal(res.status, 400);
-			assert.deepInclude(res.body, {
-				status: 'error',
-				error: {
-					'firstName': 'Firstname is Required',
-					'lastName': 'Lastname is Required',
-					'email': 'Email field is required',
-					'password': 'Password field is required',
-					'gender': 'Gender field is required',
-					'jobRole': 'JobRole field is required',
-					'department': 'Department field is required',
-					'address': 'Address field is required'
-				}
-			});
+		assert.equal(res.status, 400);
+		assert.deepInclude(res.body, {
+			status: 'error',
+			error: {
+				'firstName': 'Firstname is Required',
+				'lastName': 'Lastname is Required',
+				'email': 'Email field is required',
+				'password': 'Password field is required',
+				'gender': 'Gender field is required',
+				'jobRole': 'JobRole field is required',
+				'department': 'Department field is required',
+				'address': 'Address field is required'
+			}
 		});
+	});
 
-		it('it should return error for email already in the database', async () => {
-			const token = TokenFactory('admin');
-			const email = chance.email();
+	it('it should return error for email already in the database', async () => {
+		const token = TokenFactory('admin');
+		const email = chance.email();
 
-			await UserFactory.createUser({ ...userDetails, email }, 'employee');
+		await UserFactory.createUser({ ...userDetails, email }, 'employee');
 
-			const res = await chai.request(server)
-				.post('/api/v1/auth/create-user')
-				.set('Authorization', `Bearer ${token}`)
-				.send({ ...userDetails, email });
+		const res = await chai.request(server)
+			.post('/api/v1/auth/create-user')
+			.set('Authorization', `Bearer ${token}`)
+			.send({ ...userDetails, email });
 
-			assert.equal(res.status, 400);
-			assert.deepInclude(res.body, {
-				status: 'error',
-				error: `User with email ${email} already exists`
-			});
+		assert.equal(res.status, 400);
+		assert.deepInclude(res.body, {
+			status: 'error',
+			error: `User with email ${email} already exists`
 		});
+	});
 
-		it('it should return return success message and a token', async () => {
-			const token = TokenFactory('admin');
-			const email = chance.email();
+	it('it should return return success message and a token', async () => {
+		const token = TokenFactory('admin');
+		const email = chance.email();
 
-			const res = await chai.request(server)
-				.post('/api/v1/auth/create-user')
-				.set('Authorization', `Bearer ${token}`)
-				.send({ ...userDetails, email });
+		const res = await chai.request(server)
+			.post('/api/v1/auth/create-user')
+			.set('Authorization', `Bearer ${token}`)
+			.send({ ...userDetails, email });
 
-			assert.equal(res.status, 201);
-			assert.equal(res.body.status, 'success'),
-			assert.equal(res.body.data.message, 'User account successfully created');
-			assert.isString(res.body.data.token);
-			assert.isNumber(res.body.data.userId);
-		});
+		assert.equal(res.status, 201);
+		assert.equal(res.body.status, 'success'),
+		assert.equal(res.body.data.message, 'User account successfully created');
+		assert.isString(res.body.data.token);
+		assert.isNumber(res.body.data.userId);
 	});
 });
