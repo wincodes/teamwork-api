@@ -5,7 +5,7 @@ const dbConfig = require('../config/database');
 const jwt = require('jsonwebtoken');
 const loginValidation = require('../validation/LoginValidation');
 
-module.exports = {
+class AuthController {
 	/**
  * @swagger
  * paths:
@@ -149,7 +149,7 @@ module.exports = {
 							//create the token and return the response
 							jwt.sign(rows[0], process.env.APP_SECRET, { expiresIn: '5h' }, (err, token) => {
 
-								return res.status(201).json({
+								res.status(201).json({
 									status: 'success',
 									data: {
 										message: 'User account successfully created',
@@ -165,6 +165,7 @@ module.exports = {
 				});
 			}
 			pool.end();
+			return;
 		} catch (err) {
 			res.status(500).json({
 				status: 'error',
@@ -172,7 +173,7 @@ module.exports = {
 			});
 			throw err;
 		}
-	},
+	}
 
 	
 	/**
@@ -230,6 +231,7 @@ module.exports = {
 			const pool = new Pool(dbConfig);
 
 			const resp = await pool.query(`SELECT * FROM users WHERE email = '${req.body.email}'`);
+			pool.end();
 
 			const { rows } = resp;
 			if (rows.length === 0) {
@@ -279,5 +281,7 @@ module.exports = {
 		}
 	}
 
-	//end of module
-};
+	//end of class
+}
+
+module.exports = AuthController;

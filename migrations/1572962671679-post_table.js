@@ -5,17 +5,13 @@ const dbConfig = require('../config/database');
 
 module.exports.up = (next) => {
 	const query = `
-    CREATE TABLE IF NOT EXISTS users(
+    CREATE TABLE IF NOT EXISTS posts(
       id serial PRIMARY KEY,
-      firstName VARCHAR (50) NOT NULL,
-      lastName VARCHAR (50) NOT NULL,
-      password VARCHAR (255) NOT NULL,
-      email VARCHAR (50) UNIQUE NOT NULL,
-      gender VARCHAR (10) NOT NULL,
-      jobRole VARCHAR (50) NOT NULL,
-      department VARCHAR (50) NOT NULL,
-      address VARCHAR (255) NOT NULL,
-      userType VARCHAR (20) DEFAULT 'employee',
+      user_id INTEGER REFERENCES users(id),
+      title VARCHAR (100) NOT NULL,
+      image VARCHAR (255),
+      article TEXT,
+      post_type VARCHAR(10),
       created_on TIMESTAMP NOT NULL
       )
   `;
@@ -31,7 +27,7 @@ module.exports.up = (next) => {
 };
 
 module.exports.down = (next) => {
-	const query = 'DROP TABLE IF EXISTS users CASCADE';
+	const query = 'DROP TABLE IF EXISTS posts CASCADE';
 	const pool = new Pool(dbConfig);
 	pool
 		.query(query)
