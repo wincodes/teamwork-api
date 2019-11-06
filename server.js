@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const AuthRoutes = require('./routes/auth');
+const gifRoutes = require('./routes/gif');
 
 //initialize express
 const app = express();
@@ -60,6 +61,7 @@ app.get('/api/v1', (req, res) => {
 
 //routes
 app.use('/api/v1/auth', AuthRoutes);
+app.use('/api/v1/gifs', gifRoutes);
 
 //start the server
 app.listen(port, () => console.log(`server started at Port ${port}`));
