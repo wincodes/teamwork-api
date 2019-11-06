@@ -5,7 +5,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { assert } = chai;
 const server = require('../server');
-const TokenFactory = require('../factories/TokenFactory');
+const UserFactory = require('../factories/UserFactory');
 const Chance = require('chance');
 const chance = Chance();
 
@@ -60,57 +60,34 @@ describe('Test to sign in', () => {
 				});
 		});
 
-		it('it should return error for password that does not match', done => {
-			const token = TokenFactory('admin');
+		it('it should return error for password that does not match', async () => {
 			const email = chance.email();
-			chai
-				.request(server)
-				.post('/api/v1/auth/create-user')
-				.set('Authorization', `Bearer ${token}`)
-				.send({ ...userDetails, email })
-				.end((err, res) => {
-					assert.equal(res.status, 201);
+			await UserFactory.createUser({ ...userDetails, email }, 'employee');
 
+			const res = await chai.request(server)
+				.post('/api/v1/auth/signin')
+				.send({ password: '12334', email });
 
-					chai
-						.request(server)
-						.post('/api/v1/auth/signin')
-						.send({ password: '12334', email })
-						.end((err, res) => {
-							assert.equal(res.status, 400);
-							assert.deepInclude(res.body, {
-								status: 'error',
-								error: 'Password does not match'
-							});
-							done();
-						});
-				});
+			assert.equal(res.status, 400);
+			assert.deepInclude(res.body, {
+				status: 'error',
+				error: 'Password does not match'
+			});
 		});
 
-		it('it should return return success message and a token', done => {
-			const token = TokenFactory('admin');
+		it('it should return return success message and a token', async () => {
 			const email = chance.email();
-			chai
-				.request(server)
-				.post('/api/v1/auth/create-user')
-				.set('Authorization', `Bearer ${token}`)
-				.send({ ...userDetails, email })
-				.end((err, res) => {
-					assert.equal(res.status, 201);
+			await UserFactory.createUser({ ...userDetails, email }, 'employee');
 
 
-					chai
-						.request(server)
-						.post('/api/v1/auth/signin')
-						.send({ password: userDetails.password, email })
-						.end((err, res) => {
-							assert.equal(res.status, 200);
-							assert.equal(res.body.status, 'success'),
-							assert.isString(res.body.data.token);
-							assert.isNumber(res.body.data.userId);
-							done();
-						});
-				});
+			const res = await chai.request(server)
+				.post('/api/v1/auth/signin')
+				.send({ password: userDetails.password, email });
+
+			assert.equal(res.status, 200);
+			assert.equal(res.body.status, 'success'),
+			assert.isString(res.body.data.token);
+			assert.isNumber(res.body.data.userId);
 		});
 	});
 });
