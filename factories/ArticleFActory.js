@@ -34,5 +34,16 @@ module.exports = {
 		} catch (err) {
 			return err;
 		}
+	},
+
+	async allArticles() {
+		const query =  'SELECT COUNT(*) FROM posts';
+		
+		const pool = new Pool(dbConfig);
+		const res = await pool.query(query);
+
+		const { rows } = res;
+
+		return rows[0].count;
 	}
 };

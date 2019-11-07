@@ -8,5 +8,6 @@ const postController = new PostController();
 
 router.post('/', auth, postController.createArticle);
 router.patch('/:articleId', auth, postController.editArticle);
+router.delete('/:articleId', auth, postController.deleteArticle);
 
 module.exports = router;
