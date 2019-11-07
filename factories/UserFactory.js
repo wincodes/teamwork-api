@@ -7,7 +7,6 @@ const dbConfig = require('../config/database');
 module.exports = {
 
 	async createUser(details, userType) {
-		/** eslint-disable  no-useless-catch */
 		try {
 			const salt = await bcrypt.genSalt(10);
 
