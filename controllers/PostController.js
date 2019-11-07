@@ -313,6 +313,41 @@ class PostController {
 		}
 	}
 
+
+	/**
+* @swagger
+* paths:
+*  /api/v1/article/:articleId:
+*    delete:
+*      description: delete users article
+*      parameters:
+*        - in: url
+*          name: articleId
+*          required: true
+*          schema:
+*            type: number 
+*      responses:
+*        '201':
+*          description: OK, Article Deleted successfully
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  status:
+*                    type: string
+*                    example: "success" 
+*                  data:
+*                    type: object
+*                    example:
+*                      message: Article successfully deleted
+*        '403':
+*          description: Unauthorized.
+*        '500':
+*          description: Server error.
+*              
+*/
+
 	async deleteArticle(req, res) {
 		try {
 			const pool = new Pool(dbConfig);
@@ -338,13 +373,93 @@ class PostController {
 
 			const query = `DELETE FROM posts WHERE id = ${req.params.articleId}`;
 			await pool.query(query);
-			
+
 			await pool.end();
 
 			return res.status(200).json({
 				status: 'success',
 				data: {
 					message: 'Article successfully deleted'
+				}
+			});
+
+
+		} catch (err) {
+			res.status(500).json({
+				status: 'error',
+				error: 'An error occurred please try again'
+			});
+			throw err;
+		}
+	}
+
+
+	/**
+* @swagger
+* paths:
+*  /api/v1/gif/:gifId:
+*    delete:
+*      description: delete users gif
+*      parameters:
+*        - in: url
+*          name: articleId
+*          required: true
+*          schema:
+*            type: number 
+*      responses:
+*        '201':
+*          description: OK, GIf Deleted successfully
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  status:
+*                    type: string
+*                    example: "success" 
+*                  data:
+*                    type: object
+*                    example:
+*                      message: GIf successfully deleted
+*        '403':
+*          description: Unauthorized.
+*        '500':
+*          description: Server error.
+*              
+*/
+
+	async deleteGif(req, res) {
+		try {
+			const pool = new Pool(dbConfig);
+
+			const findArticle = `SELECT * FROM posts where id = ${req.params.gifId} LIMIT 1`;
+
+			const findResp = await pool.query(findArticle);
+			const findRows = findResp.rows;
+
+			if (findRows.length === 0) {
+				await pool.end();
+				return res.status(404).json({
+					status: 'error',
+					error: 'Gif Not found'
+				});
+			} else if (findRows[0].user_id !== req.user.id) {
+				await pool.end();
+				return res.status(403).json({
+					status: 'error',
+					error: 'cannot delete another user\'s gif'
+				});
+			}
+
+			const query = `DELETE FROM posts WHERE id = ${req.params.gifId}`;
+			await pool.query(query);
+
+			await pool.end();
+
+			return res.status(200).json({
+				status: 'success',
+				data: {
+					message: 'Gif successfully deleted'
 				}
 			});
 
