@@ -9,7 +9,7 @@ const TokenFactory = require('../factories/TokenFactory');
 const Chance = require('chance');
 const chance = Chance();
 const UserFactory = require('../factories/UserFactory');
-const ArticleFactory = require('../factories/ArticleFactory');
+const ArticleFactory = require('../factories/ArticleFActory');
 
 
 chai.use(chaiHttp);
