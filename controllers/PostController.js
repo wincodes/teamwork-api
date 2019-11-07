@@ -265,15 +265,17 @@ class PostController {
 
 			const findArticle = `SELECT * FROM posts where id = ${req.params.articleId} LIMIT 1`;
 
-			const findResp = (await pool.query(findArticle));
+			const findResp = await pool.query(findArticle);
 			const findRows = findResp.rows;
 
 			if (findRows.length === 0) {
+				await pool.end();
 				return res.status(404).json({
 					status: 'error',
 					error: 'Article Not found'
 				});
 			} else if (findRows[0].user_id !== req.user.id) {
+				await pool.end();
 				return res.status(403).json({
 					status: 'error',
 					error: 'cannot edit another user\'s article'
@@ -301,6 +303,51 @@ class PostController {
 					article: rows[0].article
 				}
 			});
+
+		} catch (err) {
+			res.status(500).json({
+				status: 'error',
+				error: 'An error occurred please try again'
+			});
+			throw err;
+		}
+	}
+
+	async deleteArticle(req, res) {
+		try {
+			const pool = new Pool(dbConfig);
+
+			const findArticle = `SELECT * FROM posts where id = ${req.params.articleId} LIMIT 1`;
+
+			const findResp = await pool.query(findArticle);
+			const findRows = findResp.rows;
+
+			if (findRows.length === 0) {
+				await pool.end();
+				return res.status(404).json({
+					status: 'error',
+					error: 'Article Not found'
+				});
+			} else if (findRows[0].user_id !== req.user.id) {
+				await pool.end();
+				return res.status(403).json({
+					status: 'error',
+					error: 'cannot delete another user\'s article'
+				});
+			}
+
+			const query = `DELETE FROM posts WHERE id = ${req.params.articleId}`;
+			await pool.query(query);
+			
+			await pool.end();
+
+			return res.status(200).json({
+				status: 'success',
+				data: {
+					message: 'Article successfully deleted'
+				}
+			});
+
 
 		} catch (err) {
 			res.status(500).json({

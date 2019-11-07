@@ -34,10 +34,10 @@ let creatorToken = '';
 let userArticle = '';
 
 
-describe('Test to edit an article', () => {
+describe('Test to delete an article', () => {
 
 	it('it should return 401 and unauthiorized for users not logged in', async () => {
-		const res = await chai.request(server).patch('/api/v1/articles/1');
+		const res = await chai.request(server).delete('/api/v1/articles/1');
 
 		assert.equal(res.status, 401);
 		assert.deepInclude(res.body, {
@@ -46,22 +46,8 @@ describe('Test to edit an article', () => {
 		});
 	});
 
-	it('it should return return errors and a 400 status if title and article is empty', async () => {
-		const res = await chai.request(server).patch('/api/v1/articles/1')
-			.set('Authorization', `Bearer ${token}`);
-
-		assert.equal(res.status, 400);
-		assert.deepInclude(res.body, {
-			status: 'error',
-			error: {
-				'title': 'Title field is required',
-				'article': 'Article field is required'
-			}
-		});
-	});
-
 	it('it should return return errors and a 404 status if article is not found', async () => {
-		const res = await chai.request(server).patch('/api/v1/articles/1001')
+		const res = await chai.request(server).delete('/api/v1/articles/1001')
 			.set('Authorization', `Bearer ${token}`)
 			.send({ title, article });
 
@@ -71,36 +57,43 @@ describe('Test to edit an article', () => {
 			error: 'Article Not found'
 		});
 	});
-
-	it('it should return return success message when post is edited successfully', async () => {
-
+  
+	it('it should return return errors and a 403 status if user is not same as the creator', async () => {
 		creatorToken = await UserFactory.createUser(userDetails, 'employee');
 		userArticle = await ArticleFactory.createArticle(creatorToken);
 
-		const res = await chai.request(server).patch(`/api/v1/articles/${userArticle.id}`)
+		const articlesBeforeReq = await ArticleFactory.allArticles();
+    
+		const res = await chai.request(server).delete(`/api/v1/articles/${userArticle.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send({ title, article });
+    
+		const articlesAfterReq = await ArticleFactory.allArticles();
+
+		assert.equal(res.status, 403);
+		assert.deepInclude(res.body, {
+			status: 'error',
+			error: 'cannot delete another user\'s article'
+		});
+		assert.equal(Number(articlesAfterReq), Number(articlesBeforeReq));
+	});
+
+	it('it should return return success message when post is edited successfully', async () => {
+		const articlesBeforeReq = await ArticleFactory.allArticles();
+
+		const res = await chai.request(server).delete(`/api/v1/articles/${userArticle.id}`)
 			.set('Authorization', `Bearer ${creatorToken}`)
 			.send({ title, article });
+      
+		const articlesAfterReq = await ArticleFactory.allArticles();
 
 		assert.equal(res.status, 200);
 		assert.deepInclude(res.body, {
 			status: 'success',
 			data: {
-				message: 'Article successfully updated',
-				article,
-				title
+				message: 'Article successfully deleted',
 			}
 		});
-	});
-
-	it('it should return return errors and a 403 status if user is not same as the creator', async () => {
-		const res = await chai.request(server).patch(`/api/v1/articles/${userArticle.id}`)
-			.set('Authorization', `Bearer ${token}`)
-			.send({ title, article });
-
-		assert.equal(res.status, 403);
-		assert.deepInclude(res.body, {
-			status: 'error',
-			error: 'cannot edit another user\'s article'
-		});
+		assert.equal(Number(articlesAfterReq), Number(articlesBeforeReq - 1));
 	});
 });
