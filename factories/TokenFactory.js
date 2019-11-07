@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const generateToken = (type) => {
 	const details = {
-		id: 1,
+		id: 1001,
 		firstname: 'Godwin',
 		lastname: 'Otokina',
 		email: 'admin@email.com'

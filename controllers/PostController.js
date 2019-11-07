@@ -115,13 +115,13 @@ class PostController {
 			throw err;
 		}
 	}
-    
+
 	/**
  * @swagger
  * paths:
  *  /api/v1/article:
  *    post:
- *      description: create a gif post
+ *      description: create an article
  *      parameters:
  *        - in: query
  *          name: title
@@ -196,6 +196,109 @@ class PostController {
 					articleId: rows[0].id,
 					createdOn: rows[0].created_on,
 					title: rows[0].title
+				}
+			});
+
+		} catch (err) {
+			res.status(500).json({
+				status: 'error',
+				error: 'An error occurred please try again'
+			});
+			throw err;
+		}
+	}
+
+	/**
+* @swagger
+* paths:
+*  /api/v1/article/:
+*    patch:
+*      description: edit article
+*      parameters:
+*        - in: query
+*          name: title
+*          required: true
+*          schema:
+*            type: string
+*        - in: query
+*          name: article
+*          required: true
+*          schema:
+*            type: String 
+*      responses:
+*        '201':
+*          description: OK, Updated created successfully
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  status:
+*                    type: string
+*                    example: "success" 
+*                  data:
+*                    type: object
+*                    example:
+*                      message: Article successfully updated,
+*                      article : String,
+*                      title : String
+*        '400':
+*          description: Bad request. Missing parameters.
+*        '500':
+*          description: Server error.
+*              
+*/
+	async editArticle(req, res) {
+		try {
+			// // validate the data sent
+			const { errors, isValid } = ArticleValidation(req.body);
+
+			//if validation failes send errors
+			if (!isValid) {
+				return res.status(400).json({
+					status: 'error',
+					error: errors
+				});
+			}
+
+			const pool = new Pool(dbConfig);
+
+			const findArticle = `SELECT * FROM posts where id = ${req.params.articleId} LIMIT 1`;
+
+			const findResp = (await pool.query(findArticle));
+			const findRows = findResp.rows;
+
+			if (findRows.length === 0) {
+				return res.status(404).json({
+					status: 'error',
+					error: 'Article Not found'
+				});
+			} else if (findRows[0].user_id !== req.user.id) {
+				return res.status(403).json({
+					status: 'error',
+					error: 'cannot edit another user\'s article'
+				});
+			}
+
+			const { title, article } = req.body;
+
+			const query = `
+				UPDATE posts SET title = '${title}', article = '${article}'
+				WHERE id = ${req.params.articleId}
+				RETURNING id, title, article, created_on
+			`;
+
+			const resp = await pool.query(query);
+			await pool.end();
+
+			const { rows } = resp;
+
+			return res.status(200).json({
+				status: 'success',
+				data: {
+					message: 'Article successfully updated',
+					title: rows[0].title,
+					article: rows[0].article
 				}
 			});
 
