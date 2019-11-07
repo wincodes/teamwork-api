@@ -29,13 +29,13 @@ const userDetails = {
 
 const token = TokenFactory('employee');
 let creatorToken = '';
-let userArticle = '';
+let userGif = '';
 
 
-describe('Test to delete an article', () => {
+describe('Test to delete a gif', () => {
 
 	it('it should return 401 and unauthiorized for users not logged in', async () => {
-		const res = await chai.request(server).delete('/api/v1/articles/1');
+		const res = await chai.request(server).delete('/api/v1/gifs/1');
 
 		assert.equal(res.status, 401);
 		assert.deepInclude(res.body, {
@@ -45,50 +45,50 @@ describe('Test to delete an article', () => {
 	});
 
 	it('it should return return errors and a 404 status if article is not found', async () => {
-		const res = await chai.request(server).delete('/api/v1/articles/1001')
+		const res = await chai.request(server).delete('/api/v1/gifs/1001')
 			.set('Authorization', `Bearer ${token}`);
 
 		assert.equal(res.status, 404);
 		assert.deepInclude(res.body, {
 			status: 'error',
-			error: 'Article Not found'
+			error: 'Gif Not found'
 		});
 	});
-  
+
 	it('it should return return errors and a 403 status if user is not same as the creator', async () => {
 		creatorToken = await UserFactory.createUser(userDetails, 'employee');
-		userArticle = await PostFactory.createArticle(creatorToken);
+		userGif = await PostFactory.createGif(creatorToken);
 
-		const articlesBeforeReq = await PostFactory.allPosts();
-    
-		const res = await chai.request(server).delete(`/api/v1/articles/${userArticle.id}`)
+		const postsBeforeRequest = await PostFactory.allPosts();
+
+		const res = await chai.request(server).delete(`/api/v1/gifs/${userGif.id}`)
 			.set('Authorization', `Bearer ${token}`);
-    
-		const articlesAfterReq = await PostFactory.allPosts();
+
+		const postsAfterRequest = await PostFactory.allPosts();
 
 		assert.equal(res.status, 403);
 		assert.deepInclude(res.body, {
 			status: 'error',
-			error: 'cannot delete another user\'s article'
+			error: 'cannot delete another user\'s gif'
 		});
-		assert.equal(Number(articlesAfterReq), Number(articlesBeforeReq));
+		assert.equal(Number(postsAfterRequest), Number(postsBeforeRequest));
 	});
 
 	it('it should return return success message when post is edited successfully', async () => {
-		const articlesBeforeReq = await PostFactory.allPosts();
+		const postsBeforeRequest = await PostFactory.allPosts();
 
-		const res = await chai.request(server).delete(`/api/v1/articles/${userArticle.id}`)
+		const res = await chai.request(server).delete(`/api/v1/gifs/${userGif.id}`)
 			.set('Authorization', `Bearer ${creatorToken}`);
-      
-		const articlesAfterReq = await PostFactory.allPosts();
+
+		const postsAfterRequest = await PostFactory.allPosts();
 
 		assert.equal(res.status, 200);
 		assert.deepInclude(res.body, {
 			status: 'success',
 			data: {
-				message: 'Article successfully deleted',
+				message: 'Gif successfully deleted',
 			}
 		});
-		assert.equal(Number(articlesAfterReq), Number(articlesBeforeReq - 1));
+		assert.equal(Number(postsAfterRequest), Number(postsBeforeRequest - 1));
 	});
 });

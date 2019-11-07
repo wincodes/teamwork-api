@@ -8,5 +8,6 @@ const postController = new PostController();
 
 
 router.post('/', auth, multer,  postController.createGIf);
+router.delete('/:gifId', auth, postController.deleteGif);
 
 module.exports = router;
