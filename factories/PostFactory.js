@@ -21,7 +21,7 @@ module.exports = {
         (
           '${user.id}', '${title}', '${article}', 'article', NOW()
         )
-        RETURNING id, title, article
+        RETURNING id, title, article, created_on
       `;
 
 			const pool = new Pool(dbConfig);
