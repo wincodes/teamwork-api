@@ -31,10 +31,10 @@ const token = TokenFactory('employee');
 const comment = chance.paragraph({ sentences: 3 });
 
 
-describe('Test to create an article comment', () => {
+describe('Test to create a gif comment', () => {
 
 	it('it should return 401 and unauthiorized for users not logged in', async () => {
-		const res = await chai.request(server).post('/api/v1/articles/1/comment');
+		const res = await chai.request(server).post('/api/v1/gifs/1/comment');
 
 		assert.equal(res.status, 401);
 		assert.deepInclude(res.body, {
@@ -44,7 +44,7 @@ describe('Test to create an article comment', () => {
 	});
 
 	it('it should return return errors and a 400 status if comment is not sent', async () => {
-		const res = await chai.request(server).post('/api/v1/articles/1001/comment')
+		const res = await chai.request(server).post('/api/v1/gifs/1001/comment')
 			.set('Authorization', `Bearer ${token}`);
 
 		assert.equal(res.status, 400);
@@ -54,23 +54,23 @@ describe('Test to create an article comment', () => {
 		});
 	});
 
-	it('it should return return errors and a 404 status if article is not found', async () => {
-		const res = await chai.request(server).post('/api/v1/articles/1001/comment')
+	it('it should return return errors and a 404 status if gif post is not found', async () => {
+		const res = await chai.request(server).post('/api/v1/gifs/1001/comment')
 			.set('Authorization', `Bearer ${token}`)
 			.send({ comment });
 
 		assert.equal(res.status, 404);
 		assert.deepInclude(res.body, {
 			status: 'error',
-			error: 'Article not found'
+			error: 'Gif not found'
 		});
 	});
 
 	it('it should return return success message when comment is added successfully', async () => {
 		const creatorToken = await UserFactory.createUser(userDetails, 'employee');
-		const userArticle = await PostFactory.createArticle(creatorToken);
+		const userGif = await PostFactory.createGif(creatorToken);
 
-		const res = await chai.request(server).post(`/api/v1/articles/${userArticle.id}/comment`)
+		const res = await chai.request(server).post(`/api/v1/gifs/${userGif.id}/comment`)
 			.set('Authorization', `Bearer ${creatorToken}`)
 			.send({ comment });
 
@@ -78,8 +78,7 @@ describe('Test to create an article comment', () => {
 		assert.equal(res.status, 201);
 		assert.equal(res.body.status, 'success');
 		assert.equal(res.body.data.message, 'Comment successfully created');
-		assert.equal(res.body.data.articleTitle, userArticle.title);
-		assert.equal(res.body.data.article, userArticle.article);
+		assert.equal(res.body.data.gifTitle, userGif.title);
 		assert.equal(res.body.data.comment, comment);
 		assert.isOk(res.body.data.createdOn);
 	});
