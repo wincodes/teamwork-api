@@ -12,5 +12,15 @@ module.exports = {
 		} catch (err) {
 			console.log(err);
 		}
+	},
+
+	async truncateComments() {
+		try {
+			const query = ' TRUNCATE comments CASCADE';
+			const pool = new Pool(dbConfig);
+			await pool.query(query);
+		} catch (err) {
+			console.log(err);
+		}
 	}
 };
