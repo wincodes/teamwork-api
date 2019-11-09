@@ -12,5 +12,6 @@ router.post('/', auth, postController.createArticle);
 router.patch('/:articleId', auth, postController.editArticle);
 router.delete('/:articleId', auth, postController.deleteArticle);
 router.post('/:articleId/comment', auth, commentController.createArticleComment);
+router.get('/:articleId', auth, postController.getArticle);
 
 module.exports = router;

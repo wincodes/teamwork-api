@@ -473,7 +473,7 @@ class PostController {
 		}
 	}
 
-	async feeds(req, res){
+	async feeds(req, res) {
 		try {
 			const query = `SELECT id, created_on AS "createdOn", title, article,
 			image AS url, user_id AS "authorId"
@@ -489,7 +489,49 @@ class PostController {
 				status: 'success',
 				data: rows
 			});
-			
+
+		} catch (err) {
+			res.status(500).json({
+				status: 'error',
+				error: 'An error occurred please try again'
+			});
+			throw err;
+		}
+	}
+
+	async getArticle(req, res) {
+		try {
+			const pool = new Pool(dbConfig);
+
+			const query = `SELECT id, created_on AS "createdOn", title, article
+			FROM posts WHERE id = ${req.params.articleId} LIMIT 1`;
+
+			const resp = await pool.query(query);
+			const { rows } = resp;
+
+			if (rows.length === 0) {
+				await pool.end();
+				return res.status(404).json({
+					status: 'error',
+					error: 'Article not found'
+				});
+			}
+
+			const commentQuery = ` SELECT id AS "commentId", comment, user_id AS "authorId"
+			FROM comments WHERE post_id = ${rows[0].id}
+			`;
+			const commentResp =  await pool.query(commentQuery);
+			const comments = commentResp.rows;
+
+			return res.status(200).json({
+				status: 'success',
+				data: {
+					...rows[0],
+					comments
+				}
+			});
+
+
 		} catch (err) {
 			res.status(500).json({
 				status: 'error',
