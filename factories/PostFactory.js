@@ -82,6 +82,67 @@ module.exports = {
 			console.log(err);
 			throw err;
 		}
+	},
+
+	async createMany(userToken, data) {
+		try {
+			const allPosts = [];
+
+			for (let i = 0; i <= data; i++) {
+				/* eslint-enable no-await-in-loop */
+				const user = await jwt.verify(userToken, process.env.APP_SECRET);
+
+				const newTitle = chance.sentence({ words: 5 });
+				const newArticle = chance.paragraph({ sentences: 1 });
+				const postType = chance.pickone(['article', 'gif']);
+
+				const query = `
+					INSERT INTO posts(
+							user_id, title, article, image, post_type, created_on
+						)
+					VALUES
+					(
+						'${user.id}', '${newTitle}', '${newArticle}', 'http://www.gif/gif.gif', '${postType}', NOW()
+					)
+					RETURNING id, user_id AS "authorId", title, article, image AS url, post_type, 
+					created_on AS "createdOn"
+				`;
+
+				const pool = new Pool(dbConfig);
+				const resp = await pool.query(query);
+
+				await pool.end();
+
+				const { id, title, post_type, createdOn, article, url, authorId } = resp.rows[0];
+
+				let data = {
+					id,
+					title,
+					createdOn,
+					authorId
+				};
+
+				if (post_type === 'article') {
+					data = {
+						...data,
+						article
+					};
+				} else {
+					data = {
+						...data,
+						url
+					};
+				}
+
+				allPosts.push(data);
+				
+			}
+
+			return allPosts;
+		} catch (err) {
+			console.log(err);
+			throw err;
+		}
 	}
 
 };

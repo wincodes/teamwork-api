@@ -472,6 +472,32 @@ class PostController {
 			throw err;
 		}
 	}
+
+	async feeds(req, res){
+		try {
+			const query = `SELECT id, created_on AS "createdOn", title, article,
+			image AS url, user_id AS "authorId"
+			FROM posts ORDER BY id DESC`;
+
+			const pool = new Pool(dbConfig);
+			const resp = await pool.query(query);
+			await pool.end();
+
+			const { rows } = resp;
+
+			return res.status(200).json({
+				status: 'success',
+				data: rows
+			});
+			
+		} catch (err) {
+			res.status(500).json({
+				status: 'error',
+				error: 'An error occurred please try again'
+			});
+			throw err;
+		}
+	}
 }
 
 module.exports = PostController;
