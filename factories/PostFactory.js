@@ -52,7 +52,7 @@ module.exports = {
         (
           '${user.id}', '${title}', '${gif}', 'gif', NOW()
         )
-        RETURNING id, title, image, created_on
+        RETURNING id, title, image AS url, created_on
       `;
 
 			const pool = new Pool(dbConfig);
