@@ -12,5 +12,6 @@ const commentController = new CommentController();
 router.post('/', auth, multer,  postController.createGIf);
 router.delete('/:gifId', auth, postController.deleteGif);
 router.post('/:gifId/comment', auth, commentController.createGifComment);
+router.get('/:articleId', auth, postController.getGif);
 
 module.exports = router;

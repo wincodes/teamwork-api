@@ -32,13 +32,13 @@ const userDetails = {
 const token = TokenFactory('employee');
 
 
-describe('Test to return single article and the comments', () => {
+describe('Test to return single gif and the comments', () => {
 	before(async () => {
 		await dbTransaction.truncateComments();
 	});
 
 	it('it should return 401 and unauthiorized for users not logged in', async () => {
-		const res = await chai.request(server).get('/api/v1/articles/100');
+		const res = await chai.request(server).get('/api/v1/gifs/100');
 
 		assert.equal(res.status, 401);
 		assert.deepInclude(res.body, {
@@ -47,24 +47,24 @@ describe('Test to return single article and the comments', () => {
 		});
 	});
   
-	it('it should return return errors and a 404 status if article is not found', async () => {
-		const res = await chai.request(server).get('/api/v1/articles/10001')
+	it('it should return return errors and a 404 status if gif is not found', async () => {
+		const res = await chai.request(server).get('/api/v1/gifs/10001')
 			.set('Authorization', `Bearer ${token}`);
 
 		assert.equal(res.status, 404);
 		assert.deepInclude(res.body, {
 			status: 'error',
-			error: 'Article not found'
+			error: 'Gif not found'
 		});
 	});
 
 
 	it('it should return return success message when request is successful', async () => {
 		const creatorToken = await UserFactory.createUser(userDetails, 'employee');
-		const userArticle = await PostFactory.createArticle(creatorToken);
-		const createdComments = await CommentFactory.createMany(creatorToken, userArticle.id, 'article', 5);
+		const userGif = await PostFactory.createGif(creatorToken);
+		const createdComments = await CommentFactory.createMany(creatorToken, userGif.id, 'gif', 5);
 
-		const res = await chai.request(server).get(`/api/v1/articles/${userArticle.id}`)
+		const res = await chai.request(server).get(`/api/v1/gifs/${userGif.id}`)
 			.set('Authorization', `Bearer ${token}`);
     
 		const data = res.body.data;
@@ -72,8 +72,9 @@ describe('Test to return single article and the comments', () => {
 
 		assert.equal(res.status, 200);
 		assert.equal(res.body.status, 'success');
-		assert.equal(userArticle.id, data.id);
-		assert.equal(userArticle.title, data.title);
+		assert.equal(userGif.id, data.id);
+		assert.equal(userGif.title, data.title);
+		assert.equal(userGif.url, data.url);
 		assert.equal(createdComments.length, data.comments.length);
 		assert.isOk(data.comments[0].commentId);
 		assert.isOk(data.comments[0].authorId);
