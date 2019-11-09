@@ -6,6 +6,7 @@ const swaggerUi = require('swagger-ui-express');
 const AuthRoutes = require('./routes/auth');
 const GifRoutes = require('./routes/gif');
 const ArticleRoutes = require('./routes/article');
+const FeedsRoute = require('./routes/feeds');
 
 //initialize express
 const app = express();
@@ -64,6 +65,7 @@ app.get('/api/v1', (req, res) => {
 app.use('/api/v1/auth', AuthRoutes);
 app.use('/api/v1/gifs', GifRoutes);
 app.use('/api/v1/articles', ArticleRoutes);
+app.use('/api/v1/feed', FeedsRoute);
 
 //start the server
 app.listen(port, () => console.log(`server started at Port ${port}`));
