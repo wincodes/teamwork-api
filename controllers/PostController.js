@@ -174,7 +174,7 @@ class PostController {
 
 			const query = `
         INSERT INTO posts(
-            user_id, title, image, post_type, created_on
+            user_id, title, article, post_type, created_on
           )
         VALUES
         (
