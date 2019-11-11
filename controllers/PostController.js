@@ -178,7 +178,7 @@ class PostController {
           )
         VALUES
         (
-          '${req.user.id}', '${title}', '${article}', 'gif', NOW()
+          '${req.user.id}', '${title}', '${article}', 'article', NOW()
         )
         RETURNING id, title, article, created_on
       `;
@@ -357,7 +357,8 @@ class PostController {
 		try {
 			const pool = new Pool(dbConfig);
 
-			const findArticle = `SELECT * FROM posts where id = ${req.params.articleId} LIMIT 1`;
+			const findArticle = `SELECT * FROM posts where id = ${req.params.articleId} 
+				AND post_type = 'article' LIMIT 1`;
 
 			const findResp = await pool.query(findArticle);
 			const findRows = findResp.rows;
@@ -376,7 +377,7 @@ class PostController {
 				});
 			}
 
-			const query = `DELETE FROM posts WHERE id = ${req.params.articleId}`;
+			const query = `DELETE FROM posts WHERE id = ${req.params.articleId} AND post_type = 'article'`;
 			await pool.query(query);
 
 			await pool.end();
@@ -437,7 +438,8 @@ class PostController {
 		try {
 			const pool = new Pool(dbConfig);
 
-			const findArticle = `SELECT * FROM posts where id = ${req.params.gifId} LIMIT 1`;
+			const findArticle = `SELECT * FROM posts where id = ${req.params.gifId} 
+				AND post_type = 'gif' LIMIT 1`;
 
 			const findResp = await pool.query(findArticle);
 			const findRows = findResp.rows;
@@ -456,7 +458,7 @@ class PostController {
 				});
 			}
 
-			const query = `DELETE FROM posts WHERE id = ${req.params.gifId}`;
+			const query = `DELETE FROM posts WHERE id = ${req.params.gifId} AND post_type = 'gif'`;
 			await pool.query(query);
 
 			await pool.end();
