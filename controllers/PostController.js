@@ -119,7 +119,7 @@ class PostController {
 	/**
  * @swagger
  * paths:
- *  /api/v1/article:
+ *  /api/v1/articles:
  *    post:
  *      description: create an article
  *      parameters:
@@ -211,10 +211,15 @@ class PostController {
 	/**
 * @swagger
 * paths:
-*  /api/v1/article/:
+*  /api/v1/articles/:articleId:
 *    patch:
 *      description: edit article
 *      parameters:
+*        - in: url
+*          name: articleId
+*          required: true
+*          schema:
+*            type: Number 
 *        - in: query
 *          name: title
 *          required: true
@@ -226,8 +231,8 @@ class PostController {
 *          schema:
 *            type: String 
 *      responses:
-*        '201':
-*          description: OK, Updated created successfully
+*        '200':
+*          description: OK, Updated successfully
 *          content:
 *            application/json:
 *              schema:
@@ -327,7 +332,7 @@ class PostController {
 *          schema:
 *            type: number 
 *      responses:
-*        '201':
+*        '200':
 *          description: OK, Article Deleted successfully
 *          content:
 *            application/json:
@@ -402,12 +407,12 @@ class PostController {
 *      description: delete users gif
 *      parameters:
 *        - in: url
-*          name: articleId
+*          name: gifId
 *          required: true
 *          schema:
 *            type: number 
 *      responses:
-*        '201':
+*        '200':
 *          description: OK, GIf Deleted successfully
 *          content:
 *            application/json:
@@ -473,6 +478,32 @@ class PostController {
 		}
 	}
 
+	/**
+* @swagger
+* paths:
+*  /api/v1/feed:
+*    get:
+*      description: get all posts (articles and gifs)
+*      responses:
+*        '200':
+*          description: OK, GIf Deleted successfully
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  status:
+*                    type: string
+*                    example: "success" 
+*                  data:
+*                    type: array
+*        '403':
+*          description: Unauthorized.
+*        '500':
+*          description: Server error.
+*              
+*/
+
 	async feeds(req, res) {
 		try {
 			const query = `SELECT id, created_on AS "createdOn", title, article,
@@ -499,6 +530,41 @@ class PostController {
 		}
 	}
 
+
+	/**
+* @swagger
+* paths:
+*  /api/v1/articles/:articleId:
+*    get:
+*      description: get a particular article
+*      parameters:
+*        - in: url
+*          name: articleId
+*          required: true
+*          schema:
+*            type: number 
+*      responses:
+*        '200':
+*          description: OK, Article retrived successfully
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  status:
+*                    type: string
+*                    example: "success" 
+*                  data:
+*                    type: object
+*												
+*        '403':
+*          description: Unauthorized.
+*				'404':
+*					description: Gif not found
+*				'500':
+*          description: Server error.
+*              
+*/
 	async getArticle(req, res) {
 		try {
 			const pool = new Pool(dbConfig);
@@ -540,6 +606,42 @@ class PostController {
 			throw err;
 		}
 	}
+
+	
+	/**
+* @swagger
+* paths:
+*  /api/v1/gifs/:gifId:
+*    get:
+*      description: get a particular gif
+*      parameters:
+*        - in: url
+*          name: gifId
+*          required: true
+*          schema:
+*            type: number 
+*      responses:
+*        '200':
+*          description: OK, Gif retrived successfully
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  status:
+*                    type: string
+*                    example: "success" 
+*                  data:
+*                    type: object
+*												
+*        '403':
+*          description: Unauthorized.
+*				'404':
+*					description: Gif not found
+*				'500':
+*          description: Server error.
+*              
+*/
 
 	async getGif(req, res) {
 		try {

@@ -11,6 +11,11 @@ class CommentController {
  *    post:
  *      description: create article commment
  *      parameters:
+ *        - in: url
+ *          name: articleId
+ *          required: true
+ *          schema:
+ *            type: Number
  *        - in: query
  *          name: comment
  *          required: true
@@ -50,7 +55,7 @@ class CommentController {
 				error: 'Comment is required'
 			});
 		}
-		const articleQuery = ` SELECT * FROM posts WHERE id = ${req.params.articleId} LIMIT 1`;
+		const articleQuery = `SELECT * FROM posts WHERE id = ${req.params.articleId} LIMIT 1`;
 		const pool = new Pool(dbConfig);
 
 		const articleData = await pool.query(articleQuery);
@@ -92,10 +97,15 @@ class CommentController {
 	/**
  * @swagger
  * paths:
- *  /api/v1/gifs/:gifIId/comment:
+ *  /api/v1/gifs/:gifId/comment:
  *    post:
  *      description: create gif commment
  *      parameters:
+ *        - in: url
+ *          name: gifId
+ *          required: true
+ *          schema:
+ *            type: Number
  *        - in: query
  *          name: comment
  *          required: true
