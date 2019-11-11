@@ -74,6 +74,7 @@ describe('Test to return single article and the comments', () => {
 		assert.equal(res.body.status, 'success');
 		assert.equal(userArticle.id, data.id);
 		assert.equal(userArticle.title, data.title);
+		assert.equal(userArticle.article, data.article);
 		assert.equal(createdComments.length, data.comments.length);
 		assert.isOk(data.comments[0].commentId);
 		assert.isOk(data.comments[0].authorId);
