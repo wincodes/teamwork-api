@@ -86,7 +86,7 @@ describe('Test to delete a gif', () => {
 		assert.deepInclude(res.body, {
 			status: 'success',
 			data: {
-				message: 'Gif successfully deleted',
+				message: 'Gif post successfully deleted',
 			}
 		});
 		assert.equal(Number(postsAfterRequest), Number(postsBeforeRequest - 1));
