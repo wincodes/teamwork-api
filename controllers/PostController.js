@@ -573,7 +573,7 @@ class PostController {
 			const pool = new Pool(dbConfig);
 
 			const query = `SELECT id, created_on AS "createdOn", title, article
-			FROM posts WHERE id = ${req.params.articleId} LIMIT 1`;
+			FROM posts WHERE id = ${req.params.articleId} AND post_type = 'article' LIMIT 1`;
 
 			const resp = await pool.query(query);
 			const { rows } = resp;
@@ -651,7 +651,7 @@ class PostController {
 			const pool = new Pool(dbConfig);
 
 			const query = `SELECT id, created_on AS "createdOn", title, image as url
-			FROM posts WHERE id = ${req.params.articleId} LIMIT 1`;
+			FROM posts WHERE id = ${req.params.articleId} AND post_type = 'gif' LIMIT 1`;
 
 			const resp = await pool.query(query);
 			const { rows } = resp;

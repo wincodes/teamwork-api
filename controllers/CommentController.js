@@ -55,7 +55,8 @@ class CommentController {
 				error: 'Comment is required'
 			});
 		}
-		const articleQuery = `SELECT * FROM posts WHERE id = ${req.params.articleId} LIMIT 1`;
+		const articleQuery = `SELECT * FROM posts WHERE id = ${req.params.articleId} 
+		AND post_type = 'article' LIMIT 1`;
 		const pool = new Pool(dbConfig);
 
 		const articleData = await pool.query(articleQuery);
@@ -144,7 +145,8 @@ class CommentController {
 				error: 'Comment is required'
 			});
 		}
-		const gifQuery = ` SELECT * FROM posts WHERE id = ${req.params.gifId} LIMIT 1`;
+		const gifQuery = ` SELECT * FROM posts WHERE id = ${req.params.gifId} 
+		AND post_type = 'gif' LIMIT 1`;
 		const pool = new Pool(dbConfig);
 
 		const gifData = await pool.query(gifQuery);
