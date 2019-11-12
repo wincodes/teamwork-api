@@ -268,7 +268,8 @@ class PostController {
 
 			const pool = new Pool(dbConfig);
 
-			const findArticle = `SELECT * FROM posts where id = ${req.params.articleId} LIMIT 1`;
+			const findArticle = `SELECT * FROM posts where id = ${req.params.articleId} 
+			AND post_type = 'article' LIMIT 1`;
 
 			const findResp = await pool.query(findArticle);
 			const findRows = findResp.rows;
@@ -291,7 +292,7 @@ class PostController {
 
 			const query = `
 				UPDATE posts SET title = '${title}', article = '${article}'
-				WHERE id = ${req.params.articleId}
+				WHERE id = ${req.params.articleId} AND post_type = 'article'
 				RETURNING id, title, article, created_on
 			`;
 
@@ -572,7 +573,7 @@ class PostController {
 			const pool = new Pool(dbConfig);
 
 			const query = `SELECT id, created_on AS "createdOn", title, article
-			FROM posts WHERE id = ${req.params.articleId} LIMIT 1`;
+			FROM posts WHERE id = ${req.params.articleId} AND post_type = 'article' LIMIT 1`;
 
 			const resp = await pool.query(query);
 			const { rows } = resp;
@@ -650,7 +651,7 @@ class PostController {
 			const pool = new Pool(dbConfig);
 
 			const query = `SELECT id, created_on AS "createdOn", title, image as url
-			FROM posts WHERE id = ${req.params.articleId} LIMIT 1`;
+			FROM posts WHERE id = ${req.params.articleId} AND post_type = 'gif' LIMIT 1`;
 
 			const resp = await pool.query(query);
 			const { rows } = resp;
