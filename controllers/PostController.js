@@ -467,7 +467,7 @@ class PostController {
 			return res.status(200).json({
 				status: 'success',
 				data: {
-					message: 'Gif successfully deleted'
+					message: 'Gif post successfully deleted'
 				}
 			});
 
