@@ -24,6 +24,30 @@ const userDetails = {
 
 describe('Test to create an employee', () => {
 
+	it('it should return 401 and unauthiorized for users not logged in', async () => {
+		const res = await chai.request(server)
+			.post('/api/v1/auth/create-user');
+
+		assert.equal(res.status, 401);
+		assert.deepInclude(res.body, {
+			status: 'error',
+			error: 'unauthenticated'
+		});
+	});
+
+	it('it should return 403 and error for employees and other users not admin', async () => {
+		const token = TokenFactory('employee');
+
+		const res = await chai.request(server)
+			.post('/api/v1/auth/create-user')
+			.set('Authorization', `Bearer ${token}`);
+		assert.equal(res.status, 403);
+		assert.deepInclude(res.body, {
+			status: 'error',
+			error: 'Only an Admin is Allowed'
+		});
+	});
+
 	it('it should return validate input and return errors and a 400 status', async () => {
 		const token = TokenFactory('admin');
 
@@ -72,20 +96,6 @@ describe('Test to create an employee', () => {
 		const res = await chai.request(server)
 			.post('/api/v1/auth/create-user')
 			.set('Authorization', `Bearer ${token}`)
-			.send({ ...userDetails, email });
-
-		assert.equal(res.status, 201);
-		assert.equal(res.body.status, 'success'),
-		assert.equal(res.body.data.message, 'User account successfully created');
-		assert.isString(res.body.data.token);
-		assert.isNumber(res.body.data.userId);
-	});
-
-	it('it should return return success also when admin is not logged in', async () => {
-		const email = chance.email();
-
-		const res = await chai.request(server)
-			.post('/api/v1/auth/create-user')
 			.send({ ...userDetails, email });
 
 		assert.equal(res.status, 201);
