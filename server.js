@@ -11,6 +11,12 @@ const FeedsRoute = require('./routes/feeds');
 //initialize express
 const app = express();
 
+//allow requests from cross origin
+app.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*');
+	next();
+});
+
 //body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
