@@ -201,8 +201,6 @@ class AuthController {
 				});
 			}
 
-			if(req.body.username) req.body.email = req.body.username;
-
 			const pool = new Pool(dbConfig);
 
 			const resp = await pool.query(`SELECT * FROM users WHERE email = '${req.body.email}'`);

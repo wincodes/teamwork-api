@@ -32,7 +32,7 @@ describe('Test to sign in', () => {
 				assert.deepInclude(res.body, {
 					status: 'error',
 					error: {
-						'email': 'Email or Username field is required',
+						'email': 'Email field is required',
 						'password': 'Password field is required',
 					}
 				});
@@ -79,21 +79,6 @@ describe('Test to sign in', () => {
 		const res = await chai.request(server)
 			.post('/api/v1/auth/signin')
 			.send({ password: userDetails.password, email });
-
-		assert.equal(res.status, 200);
-		assert.equal(res.body.status, 'success'),
-		assert.isString(res.body.data.token);
-		assert.isNumber(res.body.data.userId);
-	});
-
-	it('it should return return success message and a token for username signin', async () => {
-		const email = chance.email();
-		await UserFactory.createUser({ ...userDetails, email }, 'employee');
-
-
-		const res = await chai.request(server)
-			.post('/api/v1/auth/signin')
-			.send({ password: userDetails.password, username: email });
 
 		assert.equal(res.status, 200);
 		assert.equal(res.body.status, 'success'),
