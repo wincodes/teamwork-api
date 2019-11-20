@@ -85,7 +85,9 @@ describe('Test to create an employee', () => {
 		assert.equal(res.status, 400);
 		assert.deepInclude(res.body, {
 			status: 'error',
-			error: `User with email ${email} already exists`
+			error: {
+				email: `User with email ${email} already exists`
+			}
 		});
 	});
 
