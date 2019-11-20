@@ -96,7 +96,9 @@ class AuthController {
 				//the user already exist return error
 				return res.status(400).json({
 					status: 'error',
-					error: `User with email ${req.body.email} already exists`
+					error: {
+						email: `User with email ${req.body.email} already exists`
+					}
 				});
 			} else {
 				//encrypt the password with bcryptjs
@@ -201,7 +203,7 @@ class AuthController {
 				});
 			}
 
-			if(req.body.username) req.body.email = req.body.username;
+			if (req.body.username) req.body.email = req.body.username;
 
 			const pool = new Pool(dbConfig);
 
@@ -212,7 +214,9 @@ class AuthController {
 			if (rows.length === 0) {
 				return res.status(404).json({
 					status: 'error',
-					error: `User with email ${req.body.email} not found`
+					error: {
+						email: `User with email ${req.body.email} not found`
+					}
 				});
 			} else {
 				const user = rows[0];
@@ -241,7 +245,9 @@ class AuthController {
 				} else {
 					return res.status(400).json({
 						status: 'error',
-						error: 'Password does not match'
+						error: {
+							password: 'Password does not match'
+						}
 					});
 				}
 			}
