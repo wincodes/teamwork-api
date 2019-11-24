@@ -7,22 +7,22 @@ const chaiHttp = require('chai-http');
 const { assert } = chai;
 const server = require('../server');
 const TokenFactory = require('../factories/TokenFactory');
-const Chance = require('chance');
-const chance = Chance();
-const UserFactory = require('../factories/UserFactory');
+// const Chance = require('chance');
+// const chance = Chance();
+// const UserFactory = require('../factories/UserFactory');
 
 
 chai.use(chaiHttp);
 
-const userDetails = {
-	firstName: 'godwin',
-	lastName: 'wincodes',
-	gender: 'male',
-	password: 'password',
-	jobRole: 'employee',
-	department: 'software',
-	address: 'mayfair gardens'
-};
+// const userDetails = {
+// 	firstName: 'godwin',
+// 	lastName: 'wincodes',
+// 	gender: 'male',
+// 	password: 'password',
+// 	jobRole: 'employee',
+// 	department: 'software',
+// 	address: 'mayfair gardens'
+// };
 
 const token = TokenFactory('employee');
 
@@ -92,6 +92,8 @@ describe('Test to create a  gif post', () => {
 		});
 	});
 
+	//comment out this test to prevent image from being sent to cloudinary everytime
+	/** 
 	it('it should return return success message when post is created', async () => {
 		const email = chance.email();
 
@@ -113,4 +115,5 @@ describe('Test to create a  gif post', () => {
 		assert.isNumber(res.body.data.gifId);
 		assert.isOk(res.body.data.createdOn);
 	});
+	*/
 });

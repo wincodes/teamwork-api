@@ -76,8 +76,12 @@ describe('Test to return single article and the comments', () => {
 		assert.equal(userArticle.title, data.title);
 		assert.equal(userArticle.article, data.article);
 		assert.equal(createdComments.length, data.comments.length);
+		assert.isOk(data.authorId);
+		assert.isObject(data.authorDetails);
 		assert.isOk(data.comments[0].commentId);
 		assert.isOk(data.comments[0].authorId);
 		assert.isOk(data.comments[0].comment);
+		assert.isOk(data.comments[0].firstname);
+		assert.isOk(data.comments[0].lastname);
 	});
 });

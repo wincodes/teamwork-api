@@ -509,9 +509,11 @@ class PostController {
 
 	async feeds(req, res) {
 		try {
-			const query = `SELECT id, created_on AS "createdOn", title, article,
-			image AS url, user_id AS "authorId"
-			FROM posts ORDER BY id DESC`;
+			const query = `SELECT posts.id, posts.created_on AS "createdOn", title, article,
+			image AS url, user_id AS "authorId", firstname, lastname
+			FROM posts, users 
+			WHERE user_id = users.id
+			ORDER BY posts.id DESC`;
 
 			const pool = new Pool(dbConfig);
 			const resp = await pool.query(query);
@@ -572,7 +574,7 @@ class PostController {
 		try {
 			const pool = new Pool(dbConfig);
 
-			const query = `SELECT id, created_on AS "createdOn", title, article
+			const query = `SELECT id, created_on AS "createdOn", user_id AS "authorId", title, article
 			FROM posts WHERE id = ${req.params.articleId} AND post_type = 'article' LIMIT 1`;
 
 			const resp = await pool.query(query);
@@ -586,8 +588,11 @@ class PostController {
 				});
 			}
 
-			const commentQuery = ` SELECT id AS "commentId", comment, user_id AS "authorId"
-			FROM comments WHERE post_id = ${rows[0].id}
+			const commentQuery = ` SELECT comments.id AS "commentId", comment, user_id AS "authorId",
+			firstname, lastname
+			FROM comments, users 
+			WHERE post_id = ${rows[0].id}
+			AND user_id = users.id
 			`;
 			const commentResp =  await pool.query(commentQuery);
 			const comments = commentResp.rows;
@@ -596,7 +601,8 @@ class PostController {
 				status: 'success',
 				data: {
 					...rows[0],
-					comments
+					comments,
+					authorDetails: req.user
 				}
 			});
 
@@ -650,7 +656,7 @@ class PostController {
 		try {
 			const pool = new Pool(dbConfig);
 
-			const query = `SELECT id, created_on AS "createdOn", title, image as url
+			const query = `SELECT id, created_on AS "createdOn", user_id AS "authorId", title, image as url
 			FROM posts WHERE id = ${req.params.articleId} AND post_type = 'gif' LIMIT 1`;
 
 			const resp = await pool.query(query);
@@ -664,8 +670,11 @@ class PostController {
 				});
 			}
 
-			const commentQuery = ` SELECT id AS "commentId", comment, user_id AS "authorId"
-			FROM comments WHERE post_id = ${rows[0].id}
+			const commentQuery = ` SELECT comments.id AS "commentId", comment, user_id AS "authorId",
+			firstname, lastname
+			FROM comments, users 
+			WHERE post_id = ${rows[0].id}
+			AND user_id = users.id
 			`;
 			const commentResp =  await pool.query(commentQuery);
 			const comments = commentResp.rows;
@@ -674,7 +683,8 @@ class PostController {
 				status: 'success',
 				data: {
 					...rows[0],
-					comments
+					comments,
+					authorDetails: req.user
 				}
 			});
 
