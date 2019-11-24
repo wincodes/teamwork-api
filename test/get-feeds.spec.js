@@ -65,5 +65,7 @@ describe('Test to return all feeds', () => {
 		assert.equal(res.body.data.length, manyPosts.length);
 		assert.equal(firstReturnedPost.id, lastCreatedPost.id);
 		assert.isAbove(firstReturnedPost.id, secondReturnedPost.id);
+		assert.equal(userDetails.firstName, firstReturnedPost.firstname);
+		assert.equal(userDetails.lastName, firstReturnedPost.lastname);
 	});
 });

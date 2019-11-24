@@ -75,9 +75,13 @@ describe('Test to return single gif and the comments', () => {
 		assert.equal(userGif.id, data.id);
 		assert.equal(userGif.title, data.title);
 		assert.equal(userGif.url, data.url);
+		assert.isOk(data.authorId);
+		assert.isObject(data.authorDetails);
 		assert.equal(createdComments.length, data.comments.length);
 		assert.isOk(data.comments[0].commentId);
 		assert.isOk(data.comments[0].authorId);
 		assert.isOk(data.comments[0].comment);
+		assert.isOk(data.comments[0].firstname);
+		assert.isOk(data.comments[0].lastname);
 	});
 });
