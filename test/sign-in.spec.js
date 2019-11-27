@@ -50,7 +50,9 @@ describe('Test to sign in', () => {
 				assert.equal(res.status, 404);
 				assert.deepInclude(res.body, {
 					status: 'error',
-					error: `User with email ${email} not found`
+					error: {
+						email: `User with email ${email} not found`
+					}
 				});
 				done();
 			});
@@ -67,7 +69,9 @@ describe('Test to sign in', () => {
 		assert.equal(res.status, 400);
 		assert.deepInclude(res.body, {
 			status: 'error',
-			error: 'Password does not match'
+			error: {
+				password: 'Password does not match'
+			}
 		});
 	});
 
